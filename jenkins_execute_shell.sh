@@ -34,7 +34,7 @@ fi
 
 # ── Run pytest ───────────────────────────────────────────────────────────────
 set +e
-pytest IBIQ_3028_test.py -v --tb=short \
+pytest "Auto-enabling-30-day-active-search-on-IQ-enablement.py" -v --tb=short \
     --junit-xml="$IB_RESULT_XML" \
     --html="$IB_RESULT_HTML" --self-contained-html \
     2>&1 | tee reports/run_output.log
