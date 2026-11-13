@@ -33,7 +33,7 @@ pipeline {
     stages {
         stage('Checkout from GitHub') {
             steps {
-                git url: 'https://github.com/ckarthickinfoblox/IBIQ-3028-Automation.git',
+                git url: 'https://github.com/ckarthickinfoblox/Auto-enabling-30-day-active-search-on-IQ-enablement.git',
                     branch: params.GIT_BRANCH,
                     credentialsId: 'GITHUB_CREDS'
             }
