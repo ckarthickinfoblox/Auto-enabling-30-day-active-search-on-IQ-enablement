@@ -6,24 +6,28 @@ Dev: Rahul Dhulipalla
 QA:  Chandra Karthick V
 
 Run:
-    export IB_TOKEN=<your_bearer_token>
+    export IB_TOKEN=<your_token_hex>   # Authorization: token=<value>
     export DNS_SERVER_IP=<bloxone_dns_server_ip>   # optional; auto-discovered if not set
     pytest IBIQ_3028_test.py -v --tb=short 2>&1 | tee IBIQ_3028_run.log
 """
 
 import os
+import re
 import time
 import json
 import subprocess
 import pytest
 import requests
+import urllib3
 import datetime
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 BASE_URL    = "https://env-2a.test.infoblox.com"
 TOKEN       = os.environ.get("IB_TOKEN", "")          # set via env var
 HEADERS     = {
-    "Authorization": f"Bearer {TOKEN}",
+    "Authorization": f"token={TOKEN}",
     "Content-Type":  "application/json",
 }
 POLL_INTERVAL = 10   # seconds between log-ingestion checks
@@ -174,7 +178,7 @@ def snapshot_dns_config():
 def verify_token():
     """Fail early if token is not set."""
     if not TOKEN:
-        pytest.exit("IB_TOKEN env var not set. Export your Bearer token first.", returncode=1)
+        pytest.exit("IB_TOKEN env var not set. Export your env-2a token (Authorization: token=<hex>).", returncode=1)
 
 
 @pytest.fixture(scope="session")
@@ -718,7 +722,6 @@ def test_tc23_log_content_validation(baseline):
         # answer data is being captured — not just that the field exists.
         known_qtypes = {"A", "AAAA", "MX", "CNAME", "PTR", "SOA", "TXT",
                         "NS", "SRV", "NAPTR", "HTTPS", "ANY"}
-        import re
         IPV4_RE  = re.compile(r"^\d{1,3}(\.\d{1,3}){3}$")
         IPV6_RE  = re.compile(r"^[0-9a-fA-F:]+$")
 
